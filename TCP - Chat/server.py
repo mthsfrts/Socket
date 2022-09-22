@@ -1,5 +1,6 @@
 import threading
 import socket
+from serialize import Serialize
 
 # Creating Server
 host = "127.0.0.1"
@@ -19,7 +20,7 @@ def broadcast(message, client):
     """
     for c in clients:
         if c != client:
-            c.send(f"{message}".encode("utf-8"))
+            c.send(Serialize.pickle(f"{message}"))
 
 
 def handle_client(client):
@@ -29,26 +30,26 @@ def handle_client(client):
     while True:
         try:
             # getting clients message
-            check = message = client.recv(1024)
+            check = message = Serialize.unpickle(client.recv(1024))
 
             # checking clients message for commands
-            if check.decode("utf-8").startswith("QUIT"):
+            if check.startswith("QUIT"):
                 index = clients.index(client)  # getting the index of the particular client
                 clients.remove(client)  # removing in case of an error
                 nickname = nicknames[index]  # bind the nickname to the client by index
-                broadcast(f'{nickname} has left the chat!'.encode('utf-8').upper(), client)  # broadcasting the close connection
+                broadcast(f'{nickname} has left the chat!'.upper(), client)  # broadcasting the close connection
                 print(f'{nickname} has left the server!')  # Terminal return close client connection
                 nicknames.remove(nickname)  # removing nickname
                 client.close()  # closing client connection
                 continue
 
-            elif check.decode("utf-8").startswith("LIST"):
+            elif check.startswith("LIST"):
 
                 if len(nicknames) == 1:
-                    client.send("Your are the only client in the chat!".upper().encode("utf-8"))
+                    client.send(Serialize.pickle("Your are the only client in the chat!".upper()))
 
                 else:
-                    client.send(f"{nicknames}".encode("utf-8"))
+                    client.send(Serialize.pickle(f"{nicknames}"))
                 continue
 
             else:
@@ -75,15 +76,15 @@ def main_receive():
             print(f"Connection is established with {str(address)}!")
 
             # Getting nickname
-            client.send("nickname?".encode("utf-8"))
-            nickname = client.recv(1024).decode("utf-8")
+            client.send(Serialize.pickle("nickname?"))
+            nickname = Serialize.unpickle(client.recv(1024))
 
             # Server Terminal Details Return
             print(f"The client's nickname is: {nickname}")
 
             # Greeting the Client
-            client.send("You are connected!\n".encode("utf-8").upper())
-            client.send(f"Welcome to the chat, {nickname}!".encode("utf-8").upper())
+            client.send(Serialize.pickle("You are connected!\n".upper()))
+            client.send(Serialize.pickle(f"Welcome to the chat, {nickname}!".upper()))
 
             # Populating lists
             nicknames.append(nickname)

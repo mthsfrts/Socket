@@ -4,20 +4,24 @@
 
 ---
 ### Libraries
-#### PS: All libraries are native in python.
 
 #### Require :
 * socket
 * threading
+* pickle
 
 #### Optional:
-* pickle
 * time
----
-### Communication Protocol :
 
-* The messages will be sent as a bytes.
-* The encoded protocol used in this project is UTF-8.
+*Time lib could be used for enhance the user experience*
+
+---
+### Communication Protocols :
+
+* All messages are transferred to string and serialized.
+
+* The Serialization is handled by PICKLE.
+
 ---
 ### User Commands :
 

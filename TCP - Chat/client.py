@@ -1,5 +1,6 @@
 import threading
 import socket
+from serialize import Serialize
 
 server_ip = '127.0.0.1'
 server_port = 5000
@@ -31,16 +32,16 @@ if enter == "/enter":
 
 def receive():
     """
-    Method responsible to decode and receive client messages.
+    Method responsible to receive client messages.
     """
 
     while True:
         try:
-            message = client.recv(1024).decode('utf-8')
+            message = Serialize.unpickle(client.recv(1024))
 
             # Handling Messages
             if message == "nickname?":
-                client.send(nickname.encode('utf-8'))
+                client.send(Serialize.pickle(nickname))
 
             else:
                 print(message)
@@ -59,14 +60,18 @@ def send():
     while True:
         message = f'{nickname}: {input("")}'
 
+        # Handling Commands
+
+        # Show all commands
         if message[len(nickname) + 2:].startswith("/help"):
             print("Here all the available commands:\n"
                   "/quit\n"
                   "/list")
 
+        # Getting all the clients online
         elif message[len(nickname) + 2:].startswith("/list"):
-            client.send(f"LIST".encode('utf-8'))
-            online = client.recv(1024).decode("utf-8")
+            client.send(Serialize.pickle(f"LIST"))
+            online = Serialize.unpickle(client.recv(1024))
 
             if len(online) == 1:
                 print(online)
@@ -74,14 +79,15 @@ def send():
             else:
                 print(f"clients online :\n".upper(), online)
 
+        # Disconnecting
         elif message[len(nickname) + 2:].startswith("/quit"):
-            client.send("QUIT".encode('utf-8'))
+            client.send(Serialize.pickle("QUIT"))
             print('Disconnecting!')
             client.close()
             break
 
         else:
-            client.send(message.encode('utf-8'))
+            client.send(Serialize.pickle(message))
 
 
 receive_thread = threading.Thread(target=receive)
