@@ -8,23 +8,23 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((host, port))
 sock.listen(5)
 
-# Creating Dictionary
+# Creating List
 clients = []
 nicknames = []
 
 
 def broadcast(message, client):
     """
-    Responsible to broadcast clients message through the chatroom
+    Method responsible to broadcast clients message through the chatroom
     """
     for c in clients:
         if c != client:
-            c.send(message)
+            c.send(f"{message}".encode("utf-8"))
 
 
 def handle_client(client):
     """
-    Function responsible to handle clients connections
+    Method responsible to handle clients connections
     """
     while True:
         try:
@@ -54,13 +54,14 @@ def handle_client(client):
             else:
                 broadcast(message, client)  # broadcasting messages
 
+
         except:
             break
 
 
 def main_receive():
     """
-    Function responsible to receive the clients connections
+    Method responsible to receive the clients connections
     """
     while True:
         try:
@@ -71,14 +72,14 @@ def main_receive():
             client, address = sock.accept()
 
             # Server Terminal Return
-            print(f"Connection is established with {str(address)}!".title())
+            print(f"Connection is established with {str(address)}!")
 
             # Getting nickname
             client.send("nickname?".encode("utf-8"))
             nickname = client.recv(1024).decode("utf-8")
 
             # Server Terminal Details Return
-            print(f"The nickname of this client is {nickname}".encode('utf-8'))
+            print(f"The client's nickname is: {nickname}")
 
             # Greeting the Client
             client.send("You are connected!\n".encode("utf-8").upper())
@@ -89,7 +90,7 @@ def main_receive():
             clients.append(client)
 
             # Broadcast New Connection
-            broadcast(f'{nickname} has connected.'.encode('utf-8').upper(), client)
+            broadcast(f'{nickname} has connected.'.upper(), client)
 
             # Starting Threads
             thread = threading.Thread(target=handle_client, args=(client,))

@@ -1,17 +1,39 @@
 import threading
 import socket
 
-# Creating Client
-nickname = input('Choose an nickname: ')
+server_ip = '127.0.0.1'
+server_port = 5000
 
-# Establishing Connection
-host = "127.0.0.1"
-port = 5000
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((host, port))
+# Creating Client
+nickname = input("Choose an nickname: ")
+print(f"hey, {nickname} to enter in a chatroom please use the command:".upper(), "/enter")
+enter = input()
+
+# Getting Server Details
+if enter == "/enter":
+    host = input("What is the server ip: ")
+    port = input("What is the port: ")
+
+    if host != server_ip and int(port) != server_port:
+        print("Connection Error, please check the server details!".upper())
+
+    elif host != server_ip and int(port) == server_port:
+        print("Ip Error, please check the server ip!".upper())
+
+    elif host == server_ip and int(port) != server_port:
+        print("Port Error, please check the server port!".upper())
+
+    else:
+        # Establishing Connection
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((host, int(port)))
 
 
 def receive():
+    """
+    Method responsible to decode and receive client messages.
+    """
+
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -30,6 +52,10 @@ def receive():
 
 
 def send():
+    """
+    Method responsible to encode and send client messages.
+    """
+
     while True:
         message = f'{nickname}: {input("")}'
 
@@ -46,8 +72,7 @@ def send():
                 print(online)
 
             else:
-                print(f"clients online :\n".upper())
-                print(online)
+                print(f"clients online :\n".upper(), online)
 
         elif message[len(nickname) + 2:].startswith("/quit"):
             client.send("QUIT".encode('utf-8'))
