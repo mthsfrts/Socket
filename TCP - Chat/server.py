@@ -16,7 +16,7 @@ nicknames = []
 
 def broadcast(message, client):
     """
-    Method responsible to broadcast clients message through the chatroom
+    Method responsible to broadcast client message through the chatroom
     """
     for c in clients:
         if c != client:
@@ -25,14 +25,14 @@ def broadcast(message, client):
 
 def handle_client(client):
     """
-    Method responsible to handle clients connections
+    Method responsible to handle client connections
     """
     while True:
         try:
-            # getting clients message
+            # getting client message
             check = message = Serialize.unpickle(client.recv(1024))
 
-            # checking clients message for commands
+            # checking client message for commands
             if check.startswith("QUIT"):
                 index = clients.index(client)  # getting the index of the particular client
                 clients.remove(client)  # removing in case of an error
@@ -62,14 +62,14 @@ def handle_client(client):
 
 def main_receive():
     """
-    Method responsible to receive the clients connections
+    Method responsible to receive the client connections
     """
     while True:
         try:
             # Server Status
             print("Server is running and listening ...")
 
-            # starting the accept method and splitting the details into clients and addresses
+            # starting the accept method and splitting the details into client and addresses
             client, address = sock.accept()
 
             # Server Terminal Return

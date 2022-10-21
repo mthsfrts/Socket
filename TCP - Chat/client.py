@@ -68,7 +68,7 @@ def send():
                   "/quit\n"
                   "/list")
 
-        # Getting all the clients online
+        # Getting all the client online
         elif message[len(nickname) + 2:].startswith("/list"):
             client.send(Serialize.pickle(f"LIST"))
             online = Serialize.unpickle(client.recv(1024))
